@@ -1,28 +1,18 @@
 const jwt = require("jsonwebtoken");
+const albumModel = require("../model/album.model");
 const musicModel = require("../model/music.model");
 const {uploadMusic} = require("../services/storage.service")
 
 async function createMusic(req , res) {
-    const token = req.cookies.token;
-    if(!token){
-        return res.status(401).json({message : " Unauthorized "})
-    }
-    try{
-        const decoded = jwt.verify(token,process.env.JWT_SECRET);
-        if (decoded.role !== "artist"){
-            return res.status(403).json({
-                message : "Your profile is not registered as an artist"
-            })        
-        }
+    
    
-
     const {title} = req.body;
     const file = req.file;
     const result = uploadMusic(file.buffer.toString('base64'))
     const music = await musicModel.create({
         uri : result.uri,
         title,
-        artist : decoder.id,
+        artist : req.user.id,
     })
 
     res.status(201).json({
@@ -34,10 +24,28 @@ async function createMusic(req , res) {
             artist : music.artist,
         }
     })
-     }catch{
-         return res.status(401).json({message : " Unauthorized "})
-    }
+     
 }
 
+async function createAlbum(req , res) {
+   
+    const {title, musicIds} = req.body;
 
-module.exports = {createMusic};
+    const album = await albumModel.create({
+        title , 
+        artist : req.user.artist,
+        musics : musicIds,
+    })
+    res.status(201).json({
+        message:"Album created successfully",
+        album : {
+            id : album._id,
+            title : album.title,
+            artist: album.artist,
+            musics : album.musics,
+        }
+    })
+    
+}
+
+module.exports = {createMusic , createAlbum};
