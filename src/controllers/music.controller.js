@@ -12,10 +12,9 @@ async function createMusic(req , res) {
         if (decoded.role !== "artist"){
             return res.status(403).json({
                 message : "Your profile is not registered as an artist"
-            })        }
-    }catch{
-         return res.status(401).json({message : " Unauthorized "})
-    }
+            })        
+        }
+   
 
     const {title} = req.body;
     const file = req.file;
@@ -35,6 +34,9 @@ async function createMusic(req , res) {
             artist : music.artist,
         }
     })
+     }catch{
+         return res.status(401).json({message : " Unauthorized "})
+    }
 }
 
 
