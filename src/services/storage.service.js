@@ -6,7 +6,7 @@ const imageKitClient = new ImageKit({
 async function uploadMusic(file) {
     const result = await imageKitClient.files.upload({
         file , 
-        filename : "music_" + Date.now() ,
+        fileName : "music_" + Date.now() ,
         folder : "music-app/music"
     })
     return result ;
